@@ -1,60 +1,79 @@
 /* src/App.css */
 
 body {
-    margin: 0;
-    font-family: 'Courier New', Courier, monospace; /* Classic monospace font for vintage feel */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    overflow: hidden;
-    background: linear-gradient(180deg, #B6B6B8, #E2E2E2); /* Vintage silver gradient */
-}
-
-.hackathon-title {
-    font-size: 32px;
-    text-align: center;
-    margin-bottom: 20px;
-    padding: 10px 20px;
-    background-color: #c0c0c0; /* Classic gray background */
-    border: 2px outset #a0a0a0; /* Outset border to give it a button-like feel */
-    border-radius: 8px; /* Classic rounded corners */
-    color: #000; /* Black text color */
-    box-shadow: 2px 2px 4px #888888;
+  /* existing styles */
+  background-color: #c0c0c0;
+  /* or another color that suits the retro theme */
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42mP8//8/AwgwMV8aTIwGDPz//z8Dsn378z8DSRjSZDIyMvz//z9D6t379/8gVgaGofEPhmHo9W8Yhq//MOzPvwHphwI+xSktWwAAAABJRU5ErkJggg==');
 }
 
 .container {
+  margin: auto;
+  text-align: center;
+  padding-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hackathon-title {
+  font-size: 2em;
+  margin: 0;
+  text-align: center;
+  font-family: 'Courier New', Courier, monospace;
+  color: #000080;
+  border: 3px solid #000080;
+  padding: 10px;
+  background-color: #f0f0f0;
+  box-shadow: 3px 3px #888888;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-right: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-right: 15px;
+  display: flex;
+  align-items: center;
+  width: calc(100% - 6px);
+  justify-content: center;
 }
 
 .iframe-container {
-    background-color: #fff;
-    border: 2px solid #a0a0a0;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 2px 2px 4px #888888;
+  margin-top: 20px;
+  width: 816px;
+  height: 624px;
+  border: 3px solid #000080;
+  position: relative;
+  box-shadow: 3px 3px #888888;
+  background: #f0f0f0;
 }
 
 iframe {
-    display: block; /* Remove space below iframe */
-    border: none;
-    width: 816px;
-    height: 624px;
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 
-/* Style for the wallet connect button */
+.wallet-button:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px #888888;
+}
+
+.title-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+
 .wallet-button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #c0c0c0;
-    border: 2px outset #a0a0a0;
-    border-radius: 8px;
-    font-family: 'Courier New', Courier, monospace;
-    color: #000;
-    box-shadow: 2px 2px 4px #888888;
-    cursor: pointer;
+  position: absolute;
+  right: 20px;
+  /* This gives the button padding on its right side */
 }

@@ -54,7 +54,12 @@ function App() {
     return (
         <WagmiConfig config={wagmiConfig}>
             <div className="container">
-                <h1 className="hackathon-title">Hackathon Quest</h1>
+                <h1 className="hackathon-title">
+                    Hackathon Quest
+                    <div className="wallet-button">
+                        <Web3Button />
+                    </div>
+                </h1>
                 <div className="iframe-container">
                     <iframe 
                         title="hackathon game" 
@@ -62,9 +67,6 @@ function App() {
                         allowFullScreen
                         style={{ border: '2px solid white' }}
                     ></iframe>
-                </div>
-                <div className="wallet-button">
-                    <Web3Button/>
                 </div>
             </div>
             <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
