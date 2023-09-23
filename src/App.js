@@ -7,11 +7,11 @@ import './App.css';
 import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
 import { Web3Modal } from '@web3modal/react';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
-import { arbitrum, mainnet, polygon, goerli } from 'wagmi/chains';
+import { arbitrumGoerli, goerli, baseGoerli, lineaTestnet, celo, gnosis, mantleTestnet, scrollSepolia} from 'wagmi/chains';
 import { Web3Button } from '@web3modal/react'
 import { useWeb3ModalTheme } from '@web3modal/react';
 
-const chains = [arbitrum, mainnet, polygon, goerli];
+const chains = [arbitrumGoerli, goerli, baseGoerli, lineaTestnet, celo, gnosis, mantleTestnet, scrollSepolia];
 const projectId = process.env.REACT_APP_PROJECT_ID;
 
 const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
