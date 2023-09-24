@@ -9,10 +9,8 @@ import { Web3Button } from '@web3modal/react'
 import { useWeb3ModalTheme } from '@web3modal/react';
 import { Web3Provider } from "@ethersproject/providers";
 
-
 const chains = [arbitrumGoerli, goerli, baseGoerli, lineaTestnet, celo, gnosis, mantleTestnet, scrollSepolia];
 const projectId = process.env.REACT_APP_PROJECT_ID;
-
 const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
 const wagmiConfig = createConfig({
   autoConnect: true,
@@ -62,22 +60,16 @@ function App() {
     }, [setTheme]);
 
     const mintNFT = async () => {
-        const provider = new Web3Provider(window.ethereum);; // Usage change
+        const provider = new Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         const userAddress = await signer.getAddress();
-        const priceInWei = 13000000;
-        const nonce = await provider.getTransactionCount(userAddress, 'latest');
-        const options = {
-            value: priceInWei,
-            gasLimit: 200000, // Specify a suitable gas limit
-            nonce: nonce,
+        const priceInWei = ethers.utils.parseUnits('13000000', 'wei'); // Since your PRICE is in Wei already
+        const overrides = {
+            value: priceInWei,     // in Wei
+            gasLimit: 500000      // estimate a suitable gas limit value
         };
 
-        // Detect the current network
-        const currentNetwork = await provider.getNetwork();
-        console.log("Current Network:", currentNetwork);
-
-        let contractAddress = '0x4A9fc06d16d597db711e475a40bc8bA25026C0b8';  // You will need to provide your contract address here
+        let contractAddress = '0x4A9fc06d16d597db711e475a40bc8bA25026C0b8'; 
         const contractABI = [
 	{
 		"inputs": [],
@@ -600,16 +592,21 @@ function App() {
 		"stateMutability": "nonpayable",
 		"type": "function"
 	}
-];  // You will need to provide your contract's ABI here
+]; // Your contract's ABI
 
         const nftContract = new Contract(contractAddress, contractABI, signer);
 
         try {
-            const mintTx = await nftContract.safeMint(userAddress, options);  
+            const mintTx = await nftContract.safeMint(userAddress, overrides);
             console.log("Minting... Transaction Hash:", mintTx.hash);
             await mintTx.wait();
             console.log("Successfully minted NFT!");
-        } catch (error) {
+
+            // Notify the RPG Maker MZ game of successful minting
+            document.getElementById('rpgmakerID').contentWindow.postMessage({ action: 'NFT_SUCCESS' }, '*');
+            console.log('asdasd heyyy')
+
+            } catch (error) {
             console.error("Failed to mint NFT", error);
         }
     }
@@ -626,7 +623,8 @@ function App() {
                 <div className="iframe-container">
                     <iframe 
                         title="hackathon game" 
-                        src="/game/index.html" 
+                        src="/game/index.html"
+                        id="rpgmakerID"
                         allowFullScreen
                         style={{ border: '2px solid white' }}
                     ></iframe>
