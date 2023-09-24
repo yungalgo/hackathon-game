@@ -7,8 +7,9 @@ import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { arbitrumGoerli, goerli, baseGoerli, lineaTestnet, celo, gnosis, mantleTestnet, scrollSepolia} from 'wagmi/chains';
 import { Web3Button } from '@web3modal/react'
 import { useWeb3ModalTheme } from '@web3modal/react';
+import { Web3Provider } from "@ethersproject/providers";
 
-const { Web3Provider } = ethers;
+
 const chains = [arbitrumGoerli, goerli, baseGoerli, lineaTestnet, celo, gnosis, mantleTestnet, scrollSepolia];
 const projectId = process.env.REACT_APP_PROJECT_ID;
 
@@ -63,9 +64,18 @@ function App() {
     const mintNFT = async () => {
         const provider = new Web3Provider(window.ethereum);; // Usage change
         const signer = provider.getSigner();
+        const userAddress = await signer.getAddress();
+        const priceInWei = 13000000;
+        const nonce = await provider.getTransactionCount(userAddress, 'latest');
+        const options = {
+            value: priceInWei,
+            gasLimit: 200000, // Specify a suitable gas limit
+            nonce: nonce,
+        };
 
         // Detect the current network
-        const network = await provider.getNetwork();
+        const currentNetwork = await provider.getNetwork();
+        console.log("Current Network:", currentNetwork);
 
         let contractAddress = '0x4A9fc06d16d597db711e475a40bc8bA25026C0b8';  // You will need to provide your contract address here
         const contractABI = [
@@ -595,7 +605,7 @@ function App() {
         const nftContract = new Contract(contractAddress, contractABI, signer);
 
         try {
-            const mintTx = await nftContract.mint();  
+            const mintTx = await nftContract.safeMint(userAddress, options);  
             console.log("Minting... Transaction Hash:", mintTx.hash);
             await mintTx.wait();
             console.log("Successfully minted NFT!");
