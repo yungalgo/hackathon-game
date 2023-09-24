@@ -4,12 +4,12 @@ import { ethers, Contract } from "ethers";
 import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
 import { Web3Modal } from '@web3modal/react';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
-import { arbitrumGoerli, goerli, baseGoerli, lineaTestnet, celo, gnosis, mantleTestnet, scrollSepolia} from 'wagmi/chains';
-import { Web3Button } from '@web3modal/react'
+import { arbitrumGoerli, goerli, baseGoerli, lineaTestnet, celo, mantleTestnet, scrollSepolia} from 'wagmi/chains';
+import { Web3Button } from '@web3modal/react';
 import { useWeb3ModalTheme } from '@web3modal/react';
 import { Web3Provider } from "@ethersproject/providers";
 
-const chains = [arbitrumGoerli, goerli, baseGoerli, lineaTestnet, celo, gnosis, mantleTestnet, scrollSepolia];
+const chains = [arbitrumGoerli, goerli, baseGoerli, lineaTestnet, celo, mantleTestnet, scrollSepolia];
 const projectId = process.env.REACT_APP_PROJECT_ID;
 const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
 const wagmiConfig = createConfig({
@@ -18,6 +18,16 @@ const wagmiConfig = createConfig({
   publicClient
 });
 const ethereumClient = new EthereumClient(wagmiConfig, chains);
+
+const chainIdToContractAddress = {
+    5: '0xA9d894216c74ae901Ca8204c52CF91EB77E73386',      // Goerli
+    84531: '0x4A9fc06d16d597db711e475a40bc8bA25026C0b8',  // baseGoerli
+    421613: '0x0F620709f6652C4137c72A0Bcfee2A3292A7f56f', // ArbitrumGoerli
+    59140: '0x4A9fc06d16d597db711e475a40bc8bA25026C0b8',   // LineaTestnet
+    42220: '0x4A9fc06d16d597db711e475a40bc8bA25026C0b8',   // Celo
+    534351: '0x1E8eaB9086B566F7C41f138018216FB91013A953',  // ScrollSepolia
+    5001: '0x7f8cFc95AC120C65A9fE26F2aAcD7639FF05FD0E'     // MantleTestnet
+};
 
 function App() {
     const { setTheme } = useWeb3ModalTheme();
@@ -46,7 +56,6 @@ function App() {
             }
         });
 
-        // Add listener for iframe's postMessage
         function handleMessage(event) {
             if (event.data.action === 'mintNFT') {
                 mintNFT();
@@ -54,22 +63,27 @@ function App() {
         }
 
         window.addEventListener('message', handleMessage);
-
-        // Cleanup listener on component unmount
         return () => window.removeEventListener('message', handleMessage);
     }, [setTheme]);
 
     const mintNFT = async () => {
         const provider = new Web3Provider(window.ethereum);
+        const chainId = (await provider.getNetwork()).chainId;
         const signer = provider.getSigner();
         const userAddress = await signer.getAddress();
-        const priceInWei = ethers.utils.parseUnits('13000000', 'wei'); // Since your PRICE is in Wei already
+
+        const priceInWei = ethers.utils.parseUnits('13000000', 'wei');
         const overrides = {
-            value: priceInWei,     // in Wei
-            gasLimit: 500000      // estimate a suitable gas limit value
+            value: priceInWei,
+            gasLimit: 500000
         };
 
-        let contractAddress = '0x4A9fc06d16d597db711e475a40bc8bA25026C0b8'; 
+        let contractAddress = chainIdToContractAddress[chainId];
+        if (!contractAddress) {
+            console.error("Unsupported network");
+            return;
+        }
+
         const contractABI = [
 	{
 		"inputs": [],
@@ -592,8 +606,7 @@ function App() {
 		"stateMutability": "nonpayable",
 		"type": "function"
 	}
-]; // Your contract's ABI
-
+];
         const nftContract = new Contract(contractAddress, contractABI, signer);
 
         try {
@@ -602,11 +615,8 @@ function App() {
             await mintTx.wait();
             console.log("Successfully minted NFT!");
 
-            // Notify the RPG Maker MZ game of successful minting
             document.getElementById('rpgmakerID').contentWindow.postMessage({ action: 'NFT_SUCCESS' }, '*');
-            console.log('asdasd heyyy')
-
-            } catch (error) {
+        } catch (error) {
             console.error("Failed to mint NFT", error);
         }
     }
